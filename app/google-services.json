@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "22754368562",
+    "project_id": "firestorechatjava",
+    "storage_bucket": "firestorechatjava.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22754368562:android:548f53b7b0b5a5e22ef02b",
+        "android_client_info": {
+          "package_name": "com.example.firestorechatjava"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22754368562-4r25dcs1ibrdrjr4to7ehbaoblhj8glb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBz73hyWnXOAc4Qcn4XOcWyFJ6_A6GUnGM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "22754368562-4r25dcs1ibrdrjr4to7ehbaoblhj8glb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
