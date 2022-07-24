@@ -3,6 +3,7 @@ package com.example.firestorechatjava.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -80,36 +81,27 @@ public class ChatActivity extends AppCompatActivity {
         message.put(Constants.KEY_RECEIVERID,recieverUser.id);
         message.put(Constants.KEY_MESSAGE,activityChatBinding.inputmessage.getText().toString());
         message.put(Constants.KEY_TIMESTAMP,new Date());
+
+        database.collection("priyanka").add(message);
+
+
+
+        if(conversionId !=null){
+            updateConversion(activityChatBinding.inputmessage.getText().toString());
+        }else{
+            HashMap<String , Object> conversion =new HashMap<>();
+            conversion.put(Constants.KEY_SENDER_ID ,PreferenceManager.getLoginCredentials(ChatActivity.this));
+            conversion.put(Constants.KEY_SENDER_NAME,preferenceManager.getString(Constants.KEY_NAME));
+            conversion.put(Constants.KEY_SENDER_IMAGE,preferenceManager.getString(Constants.KEY_IMAGE));
+            conversion.put(Constants.KEY_RECEIVERID,recieverUser.id);
+            conversion.put(Constants.KEY_RECIEVER_NAME,recieverUser.name);
+            conversion.put(Constants.KEY_RECIEVER_IMAGE,recieverUser.image);
+            conversion.put(Constants.KEY_LAST_MESSAGE,activityChatBinding.inputmessage.getText().toString());
+            conversion.put(Constants.KEY_TIMESTAMP,new Date());
+            addConversion(conversion);
+
+        }
         activityChatBinding.inputmessage.setText(null);
-        database.collection("priyanka").add(message).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-            @Override
-            public void onSuccess(DocumentReference documentReference) {
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e("asdamsm","sdjskd" +e.getMessage());
-                Toast.makeText(ChatActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-//        if(conversionId !=null){
-//            updateConversion(activityChatBinding.inputmessage.getText().toString());
-//        }else{
-//            HashMap<String , Object> conversion =new HashMap<>();
-//            conversion.put(Constants.KEY_SENDER_ID ,preferenceManager.getString(Constants.KEY_USER_ID));
-//            conversion.put(Constants.KEY_SENDER_NAME,preferenceManager.getString(Constants.KEY_NAME));
-//            conversion.put(Constants.KEY_SENDER_IMAGE,preferenceManager.getString(Constants.KEY_IMAGE));
-//            conversion.put(Constants.KEY_RECEIVERID,recieverUser.id);
-//            conversion.put(Constants.KEY_RECIEVER_NAME,recieverUser.name);
-//            conversion.put(Constants.KEY_RECIEVER_IMAGE,recieverUser.image);
-//            conversion.put(Constants.KEY_LAST_MESSAGE,activityChatBinding.inputmessage.getText().toString());
-//            conversion.put(Constants.KEY_TIMESTAMP,new Date());
-//            addConversion(conversion);
-//
-//        }
 
     }
 
@@ -152,9 +144,9 @@ private final EventListener<QuerySnapshot> eventListener =((value, error) -> {
         }
         activityChatBinding.chatrecyclerview.setVisibility(View.VISIBLE);
     }
-//    if(conversionId ==null){
-//        checkForConversion();
-//    }
+    if(conversionId ==null){
+        checkForConversion();
+    }
 }) ;
 
     private void addConversion(HashMap<String, Object> conversion){
@@ -175,11 +167,16 @@ private final EventListener<QuerySnapshot> eventListener =((value, error) -> {
     }
     private void loadRecievedDetalis(){
         recieverUser =(User) getIntent().getSerializableExtra(Constants.KEY_USER);
-        Log.e("dddfff","sddfefg"+recieverUser.name+" "+recieverUser.email);
+        Log.e("dddfff","sddfefg"+recieverUser.name+" "+recieverUser.id);
         activityChatBinding.textName.setText(recieverUser.name);
     }
     private void setLisatner(){
-        activityChatBinding.imageback.setOnClickListener(view -> onBackPressed());
+        activityChatBinding.imageback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+            }
+        });
         activityChatBinding.layoutsend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -197,8 +194,8 @@ private final EventListener<QuerySnapshot> eventListener =((value, error) -> {
 
     private void checkForConversion(){
         if(chatMessages.size() !=0){
-            checkForconversionRemotely(preferenceManager.getString(Constants.KEY_USER_ID), recieverUser.id);
-            checkForconversionRemotely( recieverUser.id,preferenceManager.getString(Constants.KEY_USER_ID));
+            checkForconversionRemotely(PreferenceManager.getLoginCredentials(ChatActivity.this), recieverUser.id);
+            checkForconversionRemotely( recieverUser.id,PreferenceManager.getLoginCredentials(ChatActivity.this));
 
         }
     }

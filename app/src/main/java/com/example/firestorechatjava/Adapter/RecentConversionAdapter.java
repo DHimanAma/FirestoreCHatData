@@ -10,16 +10,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.firestorechatjava.Models.ChatMessage;
+import com.example.firestorechatjava.Models.User;
 import com.example.firestorechatjava.databinding.ItemContainerRecentuserBinding;
 import com.example.firestorechatjava.databinding.ItemContainerUserBinding;
+import com.example.firestorechatjava.listner.ConversionListner;
 
 import java.util.List;
 
 public class RecentConversionAdapter extends RecyclerView.Adapter<RecentConversionAdapter.ConversionViewholder> {
     private final List<ChatMessage>chatMessages;
-
-    public RecentConversionAdapter(List<ChatMessage> chatMessages) {
+private final ConversionListner conversionListner;
+    public RecentConversionAdapter(List<ChatMessage> chatMessages,ConversionListner conversionListner) {
         this.chatMessages = chatMessages;
+        this.conversionListner=conversionListner;
     }
 
     @NonNull
@@ -53,6 +56,13 @@ holder.savedata(chatMessages.get(position));
       binding.imageProfile.setImageBitmap(getUSerimage(chatMessage.conversionImage));
       binding.textName.setText(chatMessage.conversionName);
       binding.textRecentMessage.setText(chatMessage.message);
+      binding.getRoot().setOnClickListener(view -> {
+          User user=new User();
+          user.id=chatMessage.conversionId;
+          user.name=chatMessage.conversionName;
+          user.image=chatMessage.conversionImage;
+          conversionListner.ConversionOnClicked(user);
+      });
       }
   }
     public Bitmap getUSerimage(String encodedImage){
