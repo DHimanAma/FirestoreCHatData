@@ -22,6 +22,7 @@ public class Constants {
     public static final String KEY_SENDER_IMAGE="senderImage";
     public static final String KEY_RECIEVER_IMAGE="recieverImage";
     public static final String KEY_LAST_MESSAGE="lastMessage";
+    public static final String KEY_AVALBILTY="keyavaliblity";
 
 
     public static String INSTANCE_NAMEPHONEToKEN="AmanTel_Device234";

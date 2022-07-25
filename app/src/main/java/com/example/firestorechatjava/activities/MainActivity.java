@@ -1,6 +1,6 @@
 package com.example.firestorechatjava.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
+
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,11 +12,12 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.firestorechatjava.Adapter.RecentConversionAdapter;
+import com.example.firestorechatjava.BaseActivity;
 import com.example.firestorechatjava.Models.ChatMessage;
 import com.example.firestorechatjava.Models.User;
-import com.example.firestorechatjava.R;
+
 import com.example.firestorechatjava.databinding.ActivityMainBinding;
-import com.example.firestorechatjava.databinding.ActivitySignInBinding;
+
 import com.example.firestorechatjava.listner.ConversionListner;
 import com.example.firestorechatjava.utilities.Constants;
 import com.example.firestorechatjava.utilities.PreferenceManager;
@@ -33,7 +34,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements ConversionListner {
+public class MainActivity extends BaseActivity implements ConversionListner {
 ActivityMainBinding activityMainBinding;
 PreferenceManager preferenceManager;
 private List<ChatMessage> conversions =new ArrayList<>();

@@ -1,7 +1,6 @@
 package com.example.firestorechatjava.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -13,14 +12,14 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.firestorechatjava.Adapter.ChatAdapter;
+import com.example.firestorechatjava.BaseActivity;
 import com.example.firestorechatjava.Models.ChatMessage;
 import com.example.firestorechatjava.Models.User;
 import com.example.firestorechatjava.databinding.ActivityChatBinding;
 import com.example.firestorechatjava.utilities.Constants;
 import com.example.firestorechatjava.utilities.PreferenceManager;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -36,8 +35,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends BaseActivity {
     private ActivityChatBinding activityChatBinding;
     private User recieverUser;
     private String conversionId = null;
@@ -47,7 +47,7 @@ public class ChatActivity extends AppCompatActivity {
     private FirebaseFirestore database;
     String aman = "lIyOSK4CqoEuPEANkRSu";
     String aman1;
-
+private Boolean isRecieverAvailable =false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +73,25 @@ public class ChatActivity extends AppCompatActivity {
 }
 //
 //    }
+
+    private void listenAvaiablityofReciever(){
+        database.collection("priyanka1").document(recieverUser.id).addSnapshotListener(ChatActivity.this,((value, error) -> {
+            if(error !=null){
+                return;
+            }
+            if(value !=null){
+                if(value.getLong(Constants.KEY_AVALBILTY) != null){
+                    int availblity = Objects.requireNonNull(value.getLong(Constants.KEY_AVALBILTY).intValue());
+                    isRecieverAvailable=availblity ==1;
+                }
+            }
+            if (isRecieverAvailable){
+                activityChatBinding.textavailiblity.setVisibility(View.VISIBLE);
+            }else {
+                activityChatBinding.textavailiblity.setVisibility(View.GONE);
+            }
+        }));
+    }
 
     private void sendMessage(){
         database=FirebaseFirestore.getInstance();
@@ -214,4 +233,10 @@ private final EventListener<QuerySnapshot> eventListener =((value, error) -> {
             conversionId=documentSnapshot.getId();
         }
     };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        listenAvaiablityofReciever();
+    }
 }

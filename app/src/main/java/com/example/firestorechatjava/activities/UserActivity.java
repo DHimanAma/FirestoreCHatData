@@ -1,6 +1,6 @@
 package com.example.firestorechatjava.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
+
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -9,9 +9,9 @@ import android.util.Log;
 import android.view.View;
 
 import com.example.firestorechatjava.Adapter.UserAdapter;
+import com.example.firestorechatjava.BaseActivity;
 import com.example.firestorechatjava.Models.User;
-import com.example.firestorechatjava.R;
-import com.example.firestorechatjava.databinding.ActivityMainBinding;
+
 import com.example.firestorechatjava.databinding.ActivityUserBinding;
 import com.example.firestorechatjava.listner.UserListner;
 import com.example.firestorechatjava.utilities.Constants;
@@ -22,7 +22,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserActivity extends AppCompatActivity implements UserListner {
+public class UserActivity extends BaseActivity implements UserListner {
 ActivityUserBinding activityUserBinding;
     private ProgressDialog progressDialog;
     PreferenceManager preferenceManager;
