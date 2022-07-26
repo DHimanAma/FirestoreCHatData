@@ -19,6 +19,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -56,11 +57,12 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:21.0.5'
     implementation 'com.google.firebase:firebase-messaging:23.0.6'
     implementation 'com.google.firebase:firebase-firestore:24.2.0'
+    implementation 'com.firebaseui:firebase-ui-storage:6.2.1'
 
     /*MultiDex*/
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.intellij:annotations:12.0@jar'
-
+    implementation platform('com.google.firebase:firebase-bom:30.3.1')
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
 }

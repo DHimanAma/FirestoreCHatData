@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Toast;
@@ -40,6 +42,11 @@ ActivitySignInBinding activitySignInBinding;
         progressDialog.setMessage("Loading");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setProgress(0);
+        String android_id = Settings.Secure.getString(getApplicationContext().getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        Log.e("sdksdjskdj","<<<<nkdskad>>>"+android_id);
+        preferenceManager.putString(Constants.DEVICEUNIQUEID,android_id);
+
     }
     private void setlistner(){
         activitySignInBinding.inputcreateaccount.setOnClickListener(view ->
@@ -67,7 +74,7 @@ ActivitySignInBinding activitySignInBinding;
             progressDialog.dismiss();
         }
     }
-
+ // this method use for comapre the Sign up details with sign in user :
     private void SignInUser() {
         showDialog();
         FirebaseFirestore firebaseFirestore=FirebaseFirestore.getInstance();

@@ -4,6 +4,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class ApiClient {
+
     public static String BASE_URL = "https://fcm.googleapis.com/fcm/";
     private static Retrofit retrofit = null;
 

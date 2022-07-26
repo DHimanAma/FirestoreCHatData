@@ -6,16 +6,19 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.firestorechatjava.Adapter.ChatAdapter;
+import com.example.firestorechatjava.Api.ApiClient;
 import com.example.firestorechatjava.BaseActivity;
 import com.example.firestorechatjava.Models.ChatMessage;
 import com.example.firestorechatjava.Models.User;
 import com.example.firestorechatjava.databinding.ActivityChatBinding;
+import com.example.firestorechatjava.listner.ApiService;
 import com.example.firestorechatjava.utilities.Constants;
 import com.example.firestorechatjava.utilities.PreferenceManager;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,6 +31,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,6 +43,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ChatActivity extends BaseActivity {
     private ActivityChatBinding activityChatBinding;
@@ -66,7 +77,7 @@ private Boolean isRecieverAvailable =false;
 //       // database=FirebaseFirestore.getInstance();
 //
 
-
+// use for set the list in adapter ,user id and reciever image then we set this adaptrer on recyclerview
     chatAdapter=new ChatAdapter(chatMessages, getUSerimage(recieverUser.image),PreferenceManager.getLoginCredentials(ChatActivity.this));
 
         activityChatBinding.chatrecyclerview.setAdapter(chatAdapter);
@@ -74,6 +85,7 @@ private Boolean isRecieverAvailable =false;
 //
 //    }
 
+    // this method used for on resume method when the user are pause the app nor kill the app it is respose may be 1 for user avaialbe and 0 for user are not available
     private void listenAvaiablityofReciever(){
         database.collection("priyanka1").document(recieverUser.id).addSnapshotListener(ChatActivity.this,((value, error) -> {
             if(error !=null){
@@ -84,15 +96,63 @@ private Boolean isRecieverAvailable =false;
                     int availblity = Objects.requireNonNull(value.getLong(Constants.KEY_AVALBILTY).intValue());
                     isRecieverAvailable=availblity ==1;
                 }
+                recieverUser.token=value.getString(Constants.KEY_FCM_TOKEN);
+
+                if (recieverUser.image ==null){
+                    recieverUser.image= value.getString(Constants.KEY_IMAGE);
+                    chatAdapter.setReceiverprofileImage(getUSerimage(recieverUser.image));
+                    chatAdapter.notifyItemRangeChanged(0,chatMessages.size());
+                }
             }
             if (isRecieverAvailable){
                 activityChatBinding.textavailiblity.setVisibility(View.VISIBLE);
             }else {
                 activityChatBinding.textavailiblity.setVisibility(View.GONE);
             }
+
         }));
     }
 
+    private void showToast(String message){
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    // this are used for hit the api metthod for push notification
+    private void sendNotificastion(String messageBody){
+       // String key="AAAABUxEHDI:APA91bHsHfY60xAQoQURgWXw0hm-aCvkBUtNotcgkdFt1w1pxJnKkCm6AyLpdvjntwEUqdXL5OMihcI34634lFOoAwppTVSULO2VZtSuFVuiIZTAQwmnD4K-CfOrbPH__pFE2kOcqzqE";
+        ApiClient.getClient().create(ApiService.class).sendMessage(Constants.getRemoteMessageHeader(),messageBody).enqueue(
+                new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        Log.e("dsd","<<<<<ammamama>>>"+response.toString());
+                        if(response.isSuccessful()){
+                     String aman ="";
+                     aman =response.body().toString();
+                            Log.e("dsd","<<<<<ammamama>>>"+aman);
+                            try {
+                                aman =response.body().toString();
+                                JSONObject jsonObject=new JSONObject(aman);
+                                Log.e("dsd","<<<<<ammamama>>>"+jsonObject);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            Log.e("dsd","<<<<<ammamama>>>"+aman);
+                            showToast("Notification sent succesfully");
+                        }else{
+                            showToast("error" + response.code());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+                            showToast(t.getMessage());
+                    }
+                }
+        );
+    }
+
+    // this method are used for send the chat message for firebase with user id and reciever id
     private void sendMessage(){
         database=FirebaseFirestore.getInstance();
         HashMap<String,Object>message = new HashMap<>();
@@ -105,6 +165,7 @@ private Boolean isRecieverAvailable =false;
 
 
 
+  // we have use this conversion on Main activity page then we send this by on click to save dta on firebase
         if(conversionId !=null){
             updateConversion(activityChatBinding.inputmessage.getText().toString());
         }else{
@@ -120,6 +181,37 @@ private Boolean isRecieverAvailable =false;
             addConversion(conversion);
 
         }
+
+       // if the reciever are not available then we can hit api on kill the app or pasuse the app
+        if(!isRecieverAvailable){
+            try{
+                JSONArray tokens =new JSONArray();
+                tokens.put(recieverUser.token);
+                Log.e("sjfksdjfksd","<sdksdks>>>"+recieverUser.token);
+
+              //  String m_androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+                JSONObject data =new JSONObject();
+                data.put(Constants.KEY_USER_ID,PreferenceManager.getLoginCredentials(ChatActivity.this));
+                data.put(Constants.KEY_NAME,preferenceManager.getString(Constants.KEY_NAME));
+                data.put(Constants.KEY_FCM_TOKEN,preferenceManager.getString(Constants.KEY_FCM_TOKEN));
+                data.put(Constants.KEY_MESSAGE,activityChatBinding.inputmessage.getText().toString());
+                data.put(Constants.DEVICEUNIQUEID,preferenceManager.getString(Constants.DEVICEUNIQUEID));
+
+                String aman =preferenceManager.getString(Constants.DEVICEUNIQUEID);
+                Log.e("sdksdjskdj","<<<<nkdskad>>>"+aman);
+
+                JSONObject body =new JSONObject();
+                body.put(Constants.REMOTE_MSG_DATA,data);
+                body.put(Constants.REMOTE_MSG_REGISTAION_IDS,tokens);
+                Log.e("sjfksdjfksd","<sdksdks"+preferenceManager.getString(Constants.KEY_FCM_TOKEN));
+                sendNotificastion(body.toString());
+
+            }catch (Exception exception){
+                showToast(exception.getMessage());
+            }
+        }
+
+
         activityChatBinding.inputmessage.setText(null);
 
     }
@@ -152,6 +244,7 @@ private final EventListener<QuerySnapshot> eventListener =((value, error) -> {
              chatMessage1.datetime=getReadableTime(documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP));
              chatMessage1.dateobject=documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP);
              chatMessages.add(chatMessage1);
+
             }
         }
        Collections.sort(chatMessages, (obj1,obj2)-> obj1.dateobject.compareTo(obj2.dateobject));
@@ -180,13 +273,16 @@ private final EventListener<QuerySnapshot> eventListener =((value, error) -> {
     }
 
     private Bitmap getUSerimage(String encodedImage){
-        byte[]bytes = Base64.decode(encodedImage,Base64.DEFAULT);
-        return BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-
+        if(encodedImage != null) {
+            byte[] bytes = Base64.decode(encodedImage, Base64.DEFAULT);
+            return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        }else {
+            return null;
+        }
     }
     private void loadRecievedDetalis(){
         recieverUser =(User) getIntent().getSerializableExtra(Constants.KEY_USER);
-        Log.e("dddfff","sddfefg"+recieverUser.name+" "+recieverUser.id);
+        Log.e("dddfff","sddfefg>>>>>>>>>>>>>>>>>>>>"+recieverUser.name+" "+recieverUser.token);
         activityChatBinding.textName.setText(recieverUser.name);
     }
     private void setLisatner(){

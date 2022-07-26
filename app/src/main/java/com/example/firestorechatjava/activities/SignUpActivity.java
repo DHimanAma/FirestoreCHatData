@@ -11,7 +11,9 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Base64;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Toast;
@@ -46,6 +48,11 @@ private String encodeImage;
         progressDialog.setMessage("Loading");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setProgress(0);
+
+        String android_id = Settings.Secure.getString(getApplicationContext().getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        Log.e("sdksdjskdj","<<<<nkdskad>>>"+android_id);
+        preferenceManager.putString(Constants.DEVICEUNIQUEID,android_id);
     }
 
     private void setlistner() {
@@ -77,6 +84,8 @@ private String encodeImage;
     private void showToast(String message){
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
+
+    // this method use for send all user Data to firebase :
     private void signUp(){
         showDialog();
         FirebaseFirestore firebaseFirestore=FirebaseFirestore.getInstance();
@@ -103,7 +112,7 @@ private String encodeImage;
                 });
 
     }
-
+// this m ethod user for make bitmape for getting image for gallery && camera :
     private String encodedImage(Bitmap bitmap){
         int previewWidth =150;
         int previewHeight=bitmap.getHeight()*previewWidth / bitmap.getWidth();

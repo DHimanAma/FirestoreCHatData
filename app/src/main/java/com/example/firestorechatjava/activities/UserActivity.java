@@ -60,6 +60,8 @@ ActivityUserBinding activityUserBinding;
             progressDialog.dismiss();
         }
     }
+
+    // this mehtod are used for get the all used data on this method with the help of queary then set all data in List:
     private void getUsers(){
         //showDialog();
         FirebaseFirestore database = FirebaseFirestore.getInstance();
@@ -79,10 +81,11 @@ ActivityUserBinding activityUserBinding;
                             user.name=   queryDocumentSnapshot.getString(Constants.KEY_NAME);
                             user.email = queryDocumentSnapshot.getString(Constants.KEY_EMAIl);
                             user.image = queryDocumentSnapshot.getString(Constants.KEY_IMAGE);
+                            String aman =queryDocumentSnapshot.getString(Constants.KEY_FCM_TOKEN);
                             user.token = queryDocumentSnapshot.getString(Constants.KEY_FCM_TOKEN);
                             user.id =    queryDocumentSnapshot.getId();
                             users.add(user);
-                            Log.e("jdskdjksd","<<<<sndjsdnsjx>>>>"+user.id);
+                            Log.e("jdskdjksd","<<<<sndjsdnsjx>>>>1>>>>>>"+aman);
                         }if(users.size() > 0 ){
                             UserAdapter userAdapter =new UserAdapter(users,this);
                             activityUserBinding.userrecyclerview.setAdapter(userAdapter);
@@ -97,6 +100,7 @@ ActivityUserBinding activityUserBinding;
                 });
     }
 
+    // this interface method are used for cliecked then send user details in Next page:
     @Override
     public void onUserCliked(User user) {
         Intent intent = new Intent(getApplicationContext(),ChatActivity.class);

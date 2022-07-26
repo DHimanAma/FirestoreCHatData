@@ -55,11 +55,14 @@ private FirebaseFirestore database;
         String aman =preferenceManager.getString(Constants.KEY_USER_ID);
         Log.e("jdskdjksd","<<<<sndjsdnsjx>>>>"+aman);
 }
+   // this mehotd used for set list in adapter then set adapter on rercycler view:
 private void init(){
     conversionAdapter =new RecentConversionAdapter(conversions,this);
     activityMainBinding.conversionrecyclerview.setAdapter(conversionAdapter);
     database=FirebaseFirestore.getInstance();
 }
+
+           // this mehtod used for set the user id are equal to reciever id  && reciever id are equal for user id
     private void listnerMessage(){
         database.collection(Constants.KEY_COLLECTION_CONVERSIONS)
                 .whereEqualTo(Constants.KEY_SENDER_ID,PreferenceManager.getLoginCredentials(MainActivity.this))
@@ -72,6 +75,9 @@ private void init(){
        // Log.e("dksdjskd","<<<<<sdsdsdsd>>>>>"+recieverUser.id);
     }
 
+
+
+    // this Method use for set the conversion data of user in list with the help of queary  pleae check carefully :
     private final EventListener<QuerySnapshot> eventListener =((value, error) -> {
         if (error != null) {
             return;
@@ -133,6 +139,7 @@ private  void setListner(){
 
     }
 
+    // this mehtod use for sedt save user name and image here :
     private void LoadUserDetails() {
         activityMainBinding.textname.setText(preferenceManager.getString(Constants.KEY_NAME));
        byte[] bytes= Base64.decode(preferenceManager.getString(Constants.KEY_IMAGE),Base64.DEFAULT);
@@ -140,24 +147,32 @@ private  void setListner(){
         activityMainBinding.imageProfile.setImageBitmap(bitmap);
 
     }
+
     private void showToast(String message){
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
+
+
+    //call update token method here with colletion of user and then save token of different usert on here with shared preference
     private void updateToken(String token){
+    preferenceManager.putString(Constants.KEY_FCM_TOKEN,token);
         FirebaseFirestore database =FirebaseFirestore.getInstance();
         DocumentReference documentReference = database.collection("priyanka1").document(
-               PreferenceManager.getLoginCredentials(MainActivity.this)
-        );
+               PreferenceManager.getLoginCredentials(MainActivity.this));
         documentReference.update(Constants.KEY_FCM_TOKEN,token)
 //                addOnSuccessListener(
 //                unused -> showToast("updated Token Succesfully"))
                 .addOnFailureListener(e -> showToast("Unable to update token"));
 
     }
+
+    // this method use for get the api token then update according to different user registeration
     private void getToken(){
         FirebaseMessaging.getInstance().getToken().addOnSuccessListener(this::updateToken);
     }
     private void signOut(){
+
+    // this method use for clear data for preference and delete toekn of user in firebase
         showToast("Signing out...");
         FirebaseFirestore database =FirebaseFirestore.getInstance();
         DocumentReference documentReference = database.collection("priyanka1").document(
@@ -174,6 +189,8 @@ private  void setListner(){
 
     }
 
+
+    //  this clicked use for when user last message  conversion availabe on Main avitivty
     @Override
     public void ConversionOnClicked(User user) {
         Intent intent =new Intent(getApplicationContext(),ChatActivity.class);
