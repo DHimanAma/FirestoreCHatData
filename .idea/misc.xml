@@ -3,8 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/FirestoreChatJava/app/src/main/res/drawable/backgound_input.xml" value="0.1" />
         <entry key="..\:/FirestoreChatJava/app/src/main/res/layout/activity_chat.xml" value="0.1921875" />
+        <entry key="..\:/FirestoreChatJava/app/src/main/res/layout/activity_main.xml" value="0.1875" />
+        <entry key="..\:/FirestoreChatJava/app/src/main/res/layout/activity_sign_in.xml" value="0.1875" />
         <entry key="..\:/FirestoreChatJava/app/src/main/res/layout/item_container_recentuser.xml" value="0.1921875" />
+        <entry key="..\:/FirestoreChatJava/app/src/main/res/layout/open_gallery_camera.xml" value="0.18645833333333334" />
       </map>
     </option>
   </component>

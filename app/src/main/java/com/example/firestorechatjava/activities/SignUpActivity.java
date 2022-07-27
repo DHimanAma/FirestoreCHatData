@@ -2,13 +2,23 @@ package com.example.firestorechatjava.activities;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -16,10 +26,11 @@ import android.util.Base64;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.firestorechatjava.R;
-import com.example.firestorechatjava.databinding.ActivitySignInBinding;
 import com.example.firestorechatjava.databinding.ActivitySignUpBinding;
 import com.example.firestorechatjava.utilities.Constants;
 import com.example.firestorechatjava.utilities.PreferenceManager;
@@ -32,9 +43,19 @@ import java.util.HashMap;
 
 public class SignUpActivity extends AppCompatActivity {
 ActivitySignUpBinding activitySignUpBinding;
+public static final int CAMRE=1000;
+public static final int Gallerye=2006;
+public static final int CROP_PIC=2007;
+    Bitmap photo;
+    Bitmap bitmap;
+    String imagePath = " ";
+    Uri uri;
+
+    String path = " ";
 private String encodeImage;
     private ProgressDialog progressDialog;
     PreferenceManager preferenceManager;
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,8 +74,42 @@ private String encodeImage;
                 Settings.Secure.ANDROID_ID);
         Log.e("sdksdjskdj","<<<<nkdskad>>>"+android_id);
         preferenceManager.putString(Constants.DEVICEUNIQUEID,android_id);
+
+
+        if(encodeImage == null){
+            activitySignUpBinding.imageprofile.setImageResource(R.drawable.aman);
+        }
     }
 
+    private void performCrop() {
+        // take care of exceptions
+        try {
+            // call the standard crop action intent (the user device may not
+            // support it)
+            Intent cropIntent = new Intent("com.android.camera.action.CROP");
+            // indicate image type and Uri
+           // cropIntent.setDataAndType(picUri, "image/*");
+            // set crop properties
+            cropIntent.putExtra("crop", "true");
+            // indicate aspect of desired crop
+            cropIntent.putExtra("aspectX", 2);
+            cropIntent.putExtra("aspectY", 1);
+            // indicate output X and Y
+            cropIntent.putExtra("outputX", 256);
+            cropIntent.putExtra("outputY", 256);
+            // retrieve data on return
+            cropIntent.putExtra("return-data", true);
+            // start the activity - we handle returning in onActivityResult
+            startActivityForResult(cropIntent, CROP_PIC);
+        }
+        // respond to users whose devices do not support the crop action
+        catch (ActivityNotFoundException anfe) {
+            Toast toast = Toast
+                    .makeText(this, "This device doesn't support the crop action!", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void setlistner() {
         activitySignUpBinding.inputSignIn.setOnClickListener(view ->
                 startActivity(new Intent(getApplicationContext(),SignInActivity.class)));
@@ -66,10 +121,67 @@ private String encodeImage;
             }
         });
         activitySignUpBinding.layoutImage.setOnClickListener(view -> {
-            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            pickimage.launch(intent);
+            OpenGalleryCamera(SignUpActivity.this);
         });
+    }
+    public void OpenGalleryCamera(final Context context) {
+        final Dialog dialog = new Dialog(context);
+        dialog.setContentView(R.layout.open_gallery_camera);
+
+        final Button Gallery =  dialog.findViewById(R.id.Gallery);
+        final Button Camera =  dialog.findViewById(R.id.Camera);
+
+
+        Camera.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onClick(View v) {
+                int hasPermission = ContextCompat.checkSelfPermission(SignUpActivity.this, Manifest.permission.CAMERA);
+                if (hasPermission != PackageManager.PERMISSION_GRANTED) {
+                    if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                        // Display UI and wait for user interaction
+                        showToast("please allow the camera permission");
+                    } else {
+                        requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMRE);
+                    }
+                    return;
+                } else {
+
+
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, CAMRE);
+                    dialog.dismiss();
+
+                }
+
+            }
+        });
+       Gallery.setOnClickListener(new View.OnClickListener() {
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @Override
+    public void onClick(View view) {
+        int hasPermission = ContextCompat.checkSelfPermission(SignUpActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (hasPermission != PackageManager.PERMISSION_GRANTED) {
+            if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                // Display UI and wait for user interaction
+                showToast("please allow the camera permission");
+            } else {
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, Gallerye);
+            }
+            return;
+        }else {
+            Intent intent1 = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            intent1.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivityForResult(intent1,Gallerye);
+           // pickimage.launch(intent1);
+            dialog.dismiss();
+        }
+    }
+
+});
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);
+
     }
     private void showDialog() {
         if (!progressDialog.isShowing())
@@ -122,23 +234,86 @@ private String encodeImage;
         byte[] bytes=byteArrayOutputStream.toByteArray();
         return Base64.encodeToString(bytes,Base64.DEFAULT);
     }
-    private final ActivityResultLauncher<Intent>pickimage=registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if(result.getResultCode()==RESULT_OK){
-                    Uri imageUri=result.getData().getData();
-                    try{
-                        InputStream inputStream=getContentResolver().openInputStream(imageUri);
-                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                        activitySignUpBinding.imageprofile.setImageBitmap(bitmap);
-                        activitySignUpBinding.removeaddimage.setVisibility(View.GONE);
-                        encodeImage=encodedImage(bitmap);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
+    @SuppressLint("MissingSuperCall")
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+
+        if (requestCode == CAMRE) {
+
+            // BitMap is data structure of image file
+            // which stor the image in memory
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+
+
+            activitySignUpBinding.removeaddimage.setVisibility(View.GONE);
+            encodeImage = encodedImage(photo);
+
+            activitySignUpBinding.imageprofile.setImageBitmap(photo);
+        }
+        else if(requestCode == Gallerye){
+           onSelectFromGalleryResult(data);
+
+        }
+    }
+
+
+
+    public  void onSelectFromGalleryResult(Intent data){
+        if (data != null) {
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
             }
-    );
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        uri = getImageUri(this, bitmap);
+        imagePath = getRealPathFromUri(uri);
+
+       encodeImage=encodedImage(bitmap);
+        activitySignUpBinding.removeaddimage.setVisibility(View.GONE);
+        activitySignUpBinding.imageprofile.setImageBitmap(bitmap);
+    }
+
+    private String getRealPathFromUri(Uri uri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = {MediaStore.Images.Media.DATA};
+            cursor = this.getContentResolver().query(uri, proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            String ss = cursor.getString(column_index);
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    private Uri getImageUri(Context context, Bitmap bitmap) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        Toast.makeText(context, "Image uploaded Successfully", Toast.LENGTH_LONG).show();
+        path = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "Title", null);
+        return Uri.parse(path);
+    }
+//    private final ActivityResultLauncher<Intent>pickimage=registerForActivityResult(
+//            new ActivityResultContracts.StartActivityForResult(),
+//            result -> {
+//                if(result.getResultCode()==RESULT_OK){
+//                    Uri imageUri=result.getData().getData();
+//                    try{
+//                        InputStream inputStream=getContentResolver().openInputStream(imageUri);
+//                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+//                        activitySignUpBinding.imageprofile.setImageBitmap(bitmap);
+//                        activitySignUpBinding.removeaddimage.setVisibility(View.GONE);
+//                        encodeImage=encodedImage(bitmap);
+//                    } catch (FileNotFoundException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//    );
 
 
 
