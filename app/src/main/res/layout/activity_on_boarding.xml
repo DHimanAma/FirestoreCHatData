@@ -1,0 +1,100 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/darkblue"
+    android:fitsSystemWindows="true"
+    tools:context=".activities.OnBoarding">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+
+
+
+
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewPager"
+            android:visibility="visible"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:backgroundTint="@color/darkblue"
+            android:layout_width="match_parent"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_height="@dimen/_190sdp"
+            android:background="@android:color/transparent" />
+
+       <com.google.android.material.tabs.TabLayout
+           android:layout_marginTop="@dimen/_10sdp"
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_30sdp"
+            app:tabBackground="@drawable/tab_selector"
+            app:tabGravity="center"
+            app:tabIndicatorHeight="0dp">
+
+
+       </com.google.android.material.tabs.TabLayout>
+
+        <TextView
+            android:layout_marginTop="@dimen/_20sdp"
+            android:id="@+id/monitor"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:autoSizeTextType="uniform"
+            android:layout_marginStart="8dp"
+            android:alpha="0.85"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_20sdp"
+            android:text="TextView"/>
+
+        <TextView
+            android:id="@+id/thisapp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:alpha="0.85"
+            android:autoSizeTextType="uniform"
+            android:layout_marginLeft="@dimen/_20sdp"
+            android:layout_marginRight="@dimen/_20sdp"
+            android:text="TextView"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_12sdp" />
+
+
+
+
+        <Button
+            android:id="@+id/submit"
+            android:layout_width="match_parent"
+            android:textAllCaps="false"
+            android:elevation="10dp"
+            android:textStyle="bold"
+            android:background="@drawable/yaello_gradient"
+            android:layout_marginLeft="@dimen/_20sdp"
+            android:layout_marginRight="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_40sdp"
+            android:layout_marginBottom="@dimen/_30sdp"
+
+            android:text=""
+            android:textColor="@color/white"
+            android:textSize="@dimen/_14sdp"
+            android:layout_height="wrap_content" />
+
+
+
+        </LinearLayout>
+
+
+
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

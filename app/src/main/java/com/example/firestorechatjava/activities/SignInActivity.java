@@ -31,11 +31,6 @@ ActivitySignInBinding activitySignInBinding;
         setContentView(activitySignInBinding.getRoot());
         setlistner();
         preferenceManager=new PreferenceManager(getApplicationContext());
-         if(preferenceManager.getBoolean(Constants.KEY_IS_SIGNED_IN)){
-             Intent intent=new Intent(getApplicationContext(),MainActivity.class);
-             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-             startActivity(intent);
-         }
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
