@@ -57,7 +57,7 @@ submit.setOnClickListener(new View.OnClickListener() {
             pager.setCurrentItem(pager.getCurrentItem() + 1);
     }
        else {
-Intent intent =new Intent(OnBoarding.this,SignInActivity.class);
+            Intent intent =new Intent(OnBoarding.this,SignInActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();

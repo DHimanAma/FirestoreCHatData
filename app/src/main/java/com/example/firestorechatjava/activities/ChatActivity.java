@@ -236,8 +236,7 @@ private final EventListener<QuerySnapshot> eventListener =((value, error) -> {
         for(DocumentChange documentChange : value.getDocumentChanges()){
             if(documentChange.getType() == DocumentChange.Type.ADDED){
 
-
-            ChatMessage chatMessage1 =new ChatMessage();
+                ChatMessage chatMessage1 =new ChatMessage();
              chatMessage1.senderId=documentChange.getDocument().getString(Constants.KEY_SENDER_ID);
              chatMessage1.recieverId=documentChange.getDocument().getString(Constants.KEY_RECEIVERID);
              chatMessage1.message=documentChange.getDocument().getString(Constants.KEY_MESSAGE);

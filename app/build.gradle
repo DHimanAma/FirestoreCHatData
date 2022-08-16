@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -76,4 +77,9 @@ dependencies {
 
     //noinspection GradleCompatible
     implementation'com.android.support:support-v4:23.0.1'
+
+   //crashlytics
+    implementation 'com.google.firebase:firebase-crashlytics:17.1.1'
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation  'com.google.firebase:firebase-bom:30.3.1'
 }
